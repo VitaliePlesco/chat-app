@@ -1,11 +1,39 @@
 const socket = io();
+
+function scrollToBottom() {
+  const messages = document.getElementById("messages");
+  const newMessage = messages.lastElementChild;
+  const clientHeight = messages.clientHeight;
+  const topScroll = messages.scrollHeight;
+  const scrollHeight = messages.scrollHeight;
+  const newMessageHeight = newMessage.offsetHeight;
+  const lastMessageHeight = newMessage.previousSibling.offsetHeight || 0;
+  console.log(
+    clientHeight,
+    scrollHeight,
+    topScroll,
+
+    newMessageHeight,
+    lastMessageHeight
+  );
+  if (
+    clientHeight + topScroll + newMessageHeight + lastMessageHeight >=
+    scrollHeight
+  ) {
+    console.log("Should scroll");
+    messages.scrollTop = scrollHeight;
+  }
+}
+
 socket.on("connect", () => {
   console.log("Connected to the server");
+});
+socket.on("disconnect", () => {
+  console.log("Disconnected from server");
 });
 
 socket.on("newMessage", (message) => {
   const formattedTime = moment(message.createdAt).format("h:mm a");
-
   let template = document.getElementById("message-template").innerHTML;
   let html = Mustache.render(template, {
     text: message.text,
@@ -13,16 +41,12 @@ socket.on("newMessage", (message) => {
     createdAt: formattedTime,
   });
   const messages = document.getElementById("messages");
-  messages.innerHTML = html;
-});
-
-socket.on("disconnect", () => {
-  console.log("Disconnected from server");
+  messages.innerHTML += html;
+  scrollToBottom();
 });
 
 socket.on("newLocationMessage", (message) => {
   const formattedTime = moment(message.createdAt).format("h:mm a");
-
   let template = document.getElementById("location-message-template").innerHTML;
   let html = Mustache.render(template, {
     from: message.from,
@@ -31,6 +55,7 @@ socket.on("newLocationMessage", (message) => {
   });
   const messages = document.getElementById("messages");
   messages.innerHTML = html;
+  scrollToBottom();
 });
 
 const form = document.getElementById("message-form");
