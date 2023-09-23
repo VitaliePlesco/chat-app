@@ -4,9 +4,9 @@ socket.on("connect", () => {
 });
 
 socket.on("newMessage", (message) => {
-  console.log("newMessage", message);
+  const formattedTime = moment(message.createdAt).format("h:mm a");
   const liItem = document.createElement("li");
-  liItem.textContent = `${message.from}: ${message.text}`;
+  liItem.textContent = `${message.from} ${formattedTime}: ${message.text}`;
   const messages = document.getElementById("messages");
   messages.appendChild(liItem);
 });
@@ -16,10 +16,11 @@ socket.on("disconnect", () => {
 });
 
 socket.on("newLocationMessage", (message) => {
+  const formattedTime = moment(message.createdAt).format("h:mm a");
   const liItem = document.createElement("li");
   const a = document.createElement("a");
   a.innerText = "My current location";
-  liItem.textContent = `${message.from}: `;
+  liItem.textContent = `${message.from} ${formattedTime}: `;
   a.target = "_blank";
   a.href = message.url;
   liItem.appendChild(a);
