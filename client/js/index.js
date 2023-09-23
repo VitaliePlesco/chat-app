@@ -5,10 +5,18 @@ socket.on("connect", () => {
 
 socket.on("newMessage", (message) => {
   const formattedTime = moment(message.createdAt).format("h:mm a");
-  const liItem = document.createElement("li");
-  liItem.textContent = `${message.from} ${formattedTime}: ${message.text}`;
+  // const liItem = document.createElement("li");
+  // liItem.textContent = `${message.from} ${formattedTime}: ${message.text}`;
+  // const messages = document.getElementById("messages");
+  // messages.appendChild(liItem);
+  let template = document.getElementById("message-template").innerHTML;
+  let html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime,
+  });
   const messages = document.getElementById("messages");
-  messages.appendChild(liItem);
+  messages.innerHTML = html;
 });
 
 socket.on("disconnect", () => {
@@ -17,15 +25,23 @@ socket.on("disconnect", () => {
 
 socket.on("newLocationMessage", (message) => {
   const formattedTime = moment(message.createdAt).format("h:mm a");
-  const liItem = document.createElement("li");
-  const a = document.createElement("a");
-  a.innerText = "My current location";
-  liItem.textContent = `${message.from} ${formattedTime}: `;
-  a.target = "_blank";
-  a.href = message.url;
-  liItem.appendChild(a);
+  // const liItem = document.createElement("li");
+  // const a = document.createElement("a");
+  // a.innerText = "My current location";
+  // liItem.textContent = `${message.from} ${formattedTime}: `;
+  // a.target = "_blank";
+  // a.href = message.url;
+  // liItem.appendChild(a);
+  // const messages = document.getElementById("messages");
+  // messages.appendChild(liItem);
+  let template = document.getElementById("location-message-template").innerHTML;
+  let html = Mustache.render(template, {
+    from: message.from,
+    url: message.url,
+    createdAt: formattedTime,
+  });
   const messages = document.getElementById("messages");
-  messages.appendChild(liItem);
+  messages.innerHTML = html;
 });
 
 const form = document.getElementById("message-form");
