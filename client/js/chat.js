@@ -8,28 +8,42 @@ function scrollToBottom() {
   const scrollHeight = messages.scrollHeight;
   const newMessageHeight = newMessage.offsetHeight;
   const lastMessageHeight = newMessage.previousSibling.offsetHeight || 0;
-  console.log(
-    clientHeight,
-    scrollHeight,
-    topScroll,
 
-    newMessageHeight,
-    lastMessageHeight
-  );
   if (
     clientHeight + topScroll + newMessageHeight + lastMessageHeight >=
     scrollHeight
   ) {
-    console.log("Should scroll");
     messages.scrollTop = scrollHeight;
   }
 }
 
 socket.on("connect", () => {
+  const params = Object.fromEntries(
+    new URLSearchParams(window.location.search)
+  );
   console.log("Connected to the server");
+  socket.emit("join", params, (error) => {
+    if (error) {
+      alert(error);
+      window.location.href = "/";
+    } else {
+      console.log("No error");
+    }
+  });
 });
 socket.on("disconnect", () => {
   console.log("Disconnected from server");
+});
+
+socket.on("updateUserList", (users) => {
+  const usersHtml = document.getElementById("users");
+  const ol = document.createElement("ol");
+  users.forEach((user) => {
+    const li = document.createElement("li");
+    li.textContent = user;
+    ol.appendChild(li);
+    usersHtml.appendChild(ol);
+  });
 });
 
 socket.on("newMessage", (message) => {
