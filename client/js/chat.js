@@ -68,7 +68,7 @@ socket.on("newLocationMessage", (message) => {
     createdAt: formattedTime,
   });
   const messages = document.getElementById("messages");
-  messages.innerHTML = html;
+  messages.innerHTML += html;
   scrollToBottom();
 });
 
@@ -81,7 +81,6 @@ form.addEventListener("submit", (e) => {
   socket.emit(
     "createMessage",
     {
-      from: "User",
       text: messageTextbox.value,
     },
     () => {
